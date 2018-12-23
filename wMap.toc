@@ -1,0 +1,10 @@
+## Interface: 50200
+## Title: wMap
+## Version: 0.1
+## SavedVariables: wMapDB
+## OptionalDeps: Ace3
+## X-Embeds: Ace3
+
+embeds.xml
+
+wMap.lua
