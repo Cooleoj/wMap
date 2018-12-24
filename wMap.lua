@@ -88,9 +88,7 @@ local options = {
               type = "range",
               name = "Font size",
               min = 10, max = 20, step = 1,
-              get = function()
-                return wMap.db.profile.font.size
-              end,
+              get = "GetFontSize",
               set = "SetFontSize",
             },
           },
@@ -100,6 +98,9 @@ local options = {
 
 function wMap:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("wMapDB", defaults, true)
+
+    LSM.RegisterCallback( wMap, "LibSharedMedia_Registered", "MediaUpdate" )
+    LSM.RegisterCallback( wMap, "LibSharedMedia_SetGlobal", "MediaUpdate" )
 
     LibStub("AceConfig-3.0"):RegisterOptionsTable("wMap", options)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("wMap", "wMap")
@@ -114,6 +115,10 @@ end
 
 function wMap:OnDisable()
     -- Called when the addon is disabled
+end
+
+function wMap:MediaUpdate()
+  clockTime:SetFont(LSM:Fetch("font", self:GetFontName()), self:GetFontSize(), "OUTLINE")
 end
 
 function wMap:GetPosX(info)
@@ -174,8 +179,13 @@ function wMap:SetFontSize(info, newValue)
   TimeManagerClockButton:Show()
 end
 
+function wMap:GetFontSize()
+  return self.db.profile.font.size
+end
+
 function wMap:SetScale(info, newValue)
-    self:SetScale(newValue)
+    self.db.profile.Scale = newValue
+
     Minimap:SetSize(180*self:GetScale(), 180*self:GetScale())
     Minimap:SetHitRectInsets(0, 0, 24*self:GetScale(), 24*self:GetScale())
     Minimap:SetPoint(self:GetPosition(), UIParent, self:GetPosition(), self:GetPosX(), self:GetPosY())
@@ -201,7 +211,7 @@ function wMap:Init_wMap()
   local texture = "Interface\\Buttons\\WHITE8x8"
   local backdrop = {edgeFile = texture, edgeSize = 1}
   local backdropcolor = {0/255, 0/255, 0/255}     -- backdrop color
-  local brdcolor = {0/255, 0/255, 0/255}              -- backdrop border color
+  local brdcolor = {0/255, 0/255, 0/255}          -- backdrop border color
   local wMap = CreateFrame("Frame", "wMap", UIParent)
 
   MinimapCluster:EnableMouse(false)
@@ -232,29 +242,19 @@ end
 
 --[[ Clock ]]
 function wMap:SetUpClock()
-  local mediaFolder = "Interface\\AddOns\\wMap\\media\\"   -- don't touch this ...
-  local font = mediaFolder.."big_noodle_titling.ttf"
-  local fontsize = 20
-  local fontflag = "OUTLINE"
-  local size_x = 180
-  local size_y = 180
-  local classcolors = true -- class color text
   local color = {r=255/255, g=255/255, b=255/255 }
-  local texture = "Interface\\Buttons\\WHITE8x8"
-  local backdrop = {edgeFile = texture, edgeSize = 1}
-  local backdropcolor = {0/255, 0/255, 0/255}     -- backdrop color
-  local brdcolor = {0/255, 0/255, 0/255}              -- backdrop border color
 
   if not IsAddOnLoaded("Blizzard_TimeManager") then
   	LoadAddOn("Blizzard_TimeManager")
   end
+
   local clockFrame, clockTime = TimeManagerClockButton:GetRegions()
   clockFrame:Hide()
-  clockTime:SetFont(font, fontsize, fontflag)
+  clockTime:SetFont(LSM:Fetch("font", self:GetFontName()), self:GetFontSize(), "OUTLINE")
   clockTime:SetShadowOffset(0,0)
   clockTime:SetTextColor(color.r, color.g, color.b)
   TimeManagerClockButton:ClearAllPoints()
-  TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", -1, 14)
+  TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
   TimeManagerClockButton:SetScript('OnShow', nil)
   TimeManagerClockButton:Show()
   TimeManagerClockButton:SetScript('OnClick', function(self, button)
@@ -297,7 +297,7 @@ function wMap:HideUgly()
   GameTimeFrame:EnableMouse(false)
   GameTimeCalendarInvitesTexture:SetParent("Minimap")
 
-  for i in pairs(frames) do
+    for i in pairs(frames) do
       _G[frames[i]]:Hide()
       _G[frames[i]].Show = dummy
   end
