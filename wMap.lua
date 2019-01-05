@@ -31,6 +31,18 @@ local defaults = {
 	},
 }
 
+local positions = {
+	["TOP"] = "TOP",
+	["RIGHT"] = "RIGHT",
+	["BOTTOM"] = "BOTTOM",
+	["LEFT"] = "LEFT",
+	["TOPRIGHT"] = "TOPRIGHT",
+	["TOPLEFT"] = "TOPLEFT",
+	["BOTTOMLEFT"] = "BOTTOMLEFT",
+	["BOTTOMRIGHT"] = "BOTTOMRIGHT",
+	["CENTER"] = "CENTER",
+}
+
 local options = {
 	name = "wMap",
 	handler = wMap,
@@ -60,17 +72,6 @@ local options = {
 			type = 'select',
 			order = 0,
 			values = function()
-				local positions = {
-					["TOP"] = "TOP",
-					["RIGHT"] = "RIGHT",
-					["BOTTOM"] = "BOTTOM",
-					["LEFT"] = "LEFT",
-					["TOPRIGHT"] = "TOPRIGHT",
-					["TOPLEFT"] = "TOPLEFT",
-					["BOTTOMLEFT"] = "BOTTOMLEFT",
-					["BOTTOMRIGHT"] = "BOTTOMRIGHT",
-					["CENTER"] = "CENTER",
-				}
 				return positions
 			end,
 			get = "GetPosition",
@@ -106,7 +107,7 @@ local options = {
 					type = "color",
 					order = 1,
 					hasAlpha = true,
-					get = function(info)
+					get = function()
 						local color = wMap.db.profile.border.color
 						return color[1], color[2], color[3], color[4]
 					end,
