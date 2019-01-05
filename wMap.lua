@@ -130,32 +130,32 @@ local options = {
 }
 
 function wMap:OnInitialize()
-		self.db = LibStub("AceDB-3.0"):New("wMapDB", defaults, true)
-		self.db.RegisterCallback(self, "OnProfileChanged", "Init_wMap")
-		self.db.RegisterCallback(self, "OnProfileCopied", "Init_wMap")
-		self.db.RegisterCallback(self, "OnProfileReset", "Init_wMap")
+	self.db = LibStub("AceDB-3.0"):New("wMapDB", defaults, true)
+	self.db.RegisterCallback(self, "OnProfileChanged", "Init_wMap")
+	self.db.RegisterCallback(self, "OnProfileCopied", "Init_wMap")
+	self.db.RegisterCallback(self, "OnProfileReset", "Init_wMap")
 
-		LSM.RegisterCallback( wMap, "LibSharedMedia_Registered", "MediaUpdate" )
-		LSM.RegisterCallback( wMap, "LibSharedMedia_SetGlobal", "MediaUpdate" )
+	LSM.RegisterCallback( wMap, "LibSharedMedia_Registered", "MediaUpdate" )
+	LSM.RegisterCallback( wMap, "LibSharedMedia_SetGlobal", "MediaUpdate" )
 
-		local profileOptions = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+	local profileOptions = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 
-		LibStub("AceConfig-3.0"):RegisterOptionsTable("wMap", options)
-		LibStub("AceConfig-3.0"):RegisterOptionsTable("Profiles", profileOptions)
-		self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("wMap", "wMap")
-		LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Profiles", "Profiles", "wMap")
-		self:RegisterChatCommand("wMap", "ChatCommand")
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("wMap", options)
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("Profiles", profileOptions)
+	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("wMap", "wMap")
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Profiles", "Profiles", "wMap")
+	self:RegisterChatCommand("wMap", "ChatCommand")
 
-		LibStub("AceConfigRegistry-3.0"):NotifyChange("wMap");
-		self:Init_wMap()
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("wMap");
+	self:Init_wMap()
 end
 
 function wMap:OnEnable()
-		-- Called when the addon is enabled
+	-- Called when the addon is enabled
 end
 
 function wMap:OnDisable()
-		-- Called when the addon is disabled
+	-- Called when the addon is disabled
 end
 
 function wMap:MediaUpdate()
@@ -163,35 +163,35 @@ function wMap:MediaUpdate()
 end
 
 function wMap:GetPosX(info)
-		return self.db.profile.PosX
+	return self.db.profile.PosX
 end
 
 function wMap:SetPosX(info, newValue)
-		self.db.profile.PosX = newValue
-		Minimap:SetPoint(self.db.profile.Position, UIParent, self.db.profile.Position, self.db.profile.PosX, self.db.profile.PosY)
+	self.db.profile.PosX = newValue
+	Minimap:SetPoint(self.db.profile.Position, UIParent, self.db.profile.Position, self.db.profile.PosX, self.db.profile.PosY)
 end
 
 function wMap:GetPosY(info)
-		return self.db.profile.PosY
+	return self.db.profile.PosY
 end
 
 function wMap:SetPosY(info, newValue)
-		self.db.profile.PosY = newValue
-		Minimap:SetPoint(self.db.profile.Position, UIParent, self.db.profile.Position, self.db.profile.PosX, self.db.profile.PosY)
+	self.db.profile.PosY = newValue
+	Minimap:SetPoint(self.db.profile.Position, UIParent, self.db.profile.Position, self.db.profile.PosX, self.db.profile.PosY)
 end
 
 function wMap:GetPosition(info)
-		return self.db.profile.Position
+	return self.db.profile.Position
 end
 
 function wMap:SetPosition(info, newValue)
-		self.db.profile.Position = newValue
-		Minimap:ClearAllPoints()
-		Minimap:SetPoint(self.db.profile.Position, UIParent, self.db.profile.Position, self.db.profile.PosX, self.db.profile.PosY)
+	self.db.profile.Position = newValue
+	Minimap:ClearAllPoints()
+	Minimap:SetPoint(self.db.profile.Position, UIParent, self.db.profile.Position, self.db.profile.PosX, self.db.profile.PosY)
 end
 
 function wMap:GetScale(info)
-		return self.db.profile.Scale
+	return self.db.profile.Scale
 end
 
 function wMap:SetFontName(info, newValue)
@@ -225,14 +225,14 @@ function wMap:GetFontSize()
 end
 
 function wMap:SetScale(info, newValue)
-		self.db.profile.Scale = newValue
+	self.db.profile.Scale = newValue
 
-		Minimap:SetSize(180*self:GetScale(), 180*self:GetScale())
-		Minimap:SetHitRectInsets(0, 0, 24*self:GetScale(), 24*self:GetScale())
-		Minimap:SetPoint(self:GetPosition(), UIParent, self:GetPosition(), self:GetPosX(), self:GetPosY())
-		Minimap:SetScale(self:GetScale())
-		BorderFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -(22*self:GetScale()))
-		BorderFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 1, (22*self:GetScale()))
+	Minimap:SetSize(180*self:GetScale(), 180*self:GetScale())
+	Minimap:SetHitRectInsets(0, 0, 24*self:GetScale(), 24*self:GetScale())
+	Minimap:SetPoint(self:GetPosition(), UIParent, self:GetPosition(), self:GetPosX(), self:GetPosY())
+	Minimap:SetScale(self:GetScale())
+	BorderFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -(22*self:GetScale()))
+	BorderFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 1, (22*self:GetScale()))
 end
 
 function wMap:SetBorderSize(info, newValue)
@@ -243,6 +243,7 @@ function wMap:SetBorderSize(info, newValue)
 		edgeFile = texture,
 		edgeSize = self:GetBorderSize()
 	}
+
 	BorderFrame:SetBackdrop(backdrop)
 end
 
@@ -262,11 +263,11 @@ function wMap:GetBorderColor(info)
 end
 
 function wMap:ChatCommand(input)
-		if not input or input:trim() == "" then
-				InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-		else
-				LibStub("AceConfigCmd-3.0"):HandleCommand("wMap", input)
-		end
+	if not input or input:trim() == "" then
+		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+	else
+		LibStub("AceConfigCmd-3.0"):HandleCommand("wMap", input)
+	end
 end
 
 function wMap:Init_wMap()
@@ -345,26 +346,25 @@ function wMap:HideUgly()
 	--[[ Hiding ugly things ]]
 	local dummy = function() end
 	local frames = {
-		 -- "MiniMapVoiceChatFrame",
-			"MiniMapWorldMapButton",
-			"MinimapZoneTextButton",
-			"MiniMapMailBorder",
-			"MiniMapInstanceDifficulty",
-			"MinimapNorthTag",
-			"MinimapZoomOut",
-			"MinimapZoomIn",
-			"MinimapBackdrop",
-			"GameTimeFrame",
-			"GuildInstanceDifficulty",
-			"MiniMapChallengeMode",
-			"MinimapBorderTop",
+		-- "MiniMapVoiceChatFrame",
+		"MiniMapWorldMapButton",
+		"MinimapZoneTextButton",
+		"MiniMapMailBorder",
+		"MiniMapInstanceDifficulty",
+		"MinimapNorthTag",
+		"MinimapZoomOut",
+		"MinimapZoomIn",
+		"MinimapBackdrop",
+		"GameTimeFrame",
+		"GuildInstanceDifficulty",
+		"MiniMapChallengeMode",
+		"MinimapBorderTop",
 	}
 	GameTimeFrame:SetAlpha(0)
 	GameTimeFrame:EnableMouse(false)
 	GameTimeCalendarInvitesTexture:SetParent("Minimap")
-
-		for i in pairs(frames) do
-			_G[frames[i]]:Hide()
-			_G[frames[i]].Show = dummy
+	for i in pairs(frames) do
+		_G[frames[i]]:Hide()
+		_G[frames[i]].Show = dummy
 	end
 end
