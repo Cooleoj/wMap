@@ -7,6 +7,10 @@ local defaults = {
         PosY = 0,
         Scale = 1,
         Position = "TOPRIGHT",
+        border = {
+          size = 1,
+          color = {r=255/255, g=255/255, b=255/255 }
+        },
         font = {
           -- name = nil,
           size = 18,
@@ -68,6 +72,35 @@ local options = {
             get = "GetScale",
             set = "SetScale",
         },
+      border = {
+        order = 4,
+        type = "group",
+        guiInline = true,
+        name = "Border",
+        args = {
+          size = {
+                type = "input",
+                name = "Border size",
+                order = 0,
+                desc = "The size of the border.",
+                usage = "<Size>",
+                get = "GetBorderSize",
+                set = "SetBorderSize",
+            },
+          color = {
+              name = "Border color",
+              desc = "The color of the border.",
+              type = "color",
+              order = 1,
+              hasAlpha = true,
+              get = function(info)
+                      local color = wMap.db.profile.border.color
+                      return color[1], color[2], color[3], color[4]
+                  end,
+              set = "SetBorderColor",
+          },
+        },
+      },
       font = {
           order = 21,
           type = "group",
@@ -98,14 +131,22 @@ local options = {
 
 function wMap:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("wMapDB", defaults, true)
+    self.db.RegisterCallback(self, "OnProfileChanged", "Init_wMap")
+    self.db.RegisterCallback(self, "OnProfileCopied", "Init_wMap")
+    self.db.RegisterCallback(self, "OnProfileReset", "Init_wMap")
 
     LSM.RegisterCallback( wMap, "LibSharedMedia_Registered", "MediaUpdate" )
     LSM.RegisterCallback( wMap, "LibSharedMedia_SetGlobal", "MediaUpdate" )
 
+    profileOptions = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+
     LibStub("AceConfig-3.0"):RegisterOptionsTable("wMap", options)
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("Profiles", profileOptions)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("wMap", "wMap")
+    submenuOpts = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Profiles", "Profiles", "wMap")
     self:RegisterChatCommand("wMap", "ChatCommand")
 
+    LibStub("AceConfigRegistry-3.0"):NotifyChange("wMap");
     self:Init_wMap()
 end
 
@@ -118,7 +159,7 @@ function wMap:OnDisable()
 end
 
 function wMap:MediaUpdate()
-  clockTime:SetFont(LSM:Fetch("font", self:GetFontName()), self:GetFontSize(), "OUTLINE")
+  self:SetUpClock()
 end
 
 function wMap:GetPosX(info)
@@ -194,6 +235,32 @@ function wMap:SetScale(info, newValue)
     BorderFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 1, (22*self:GetScale()))
 end
 
+function wMap:SetBorderSize(info, newValue)
+  self.db.profile.border.size = newValue
+
+  local texture = "Interface\\Buttons\\WHITE8x8"
+  local backdrop = {
+    edgeFile = texture,
+    edgeSize = self:GetBorderSize()
+  }
+  BorderFrame:SetBackdrop(backdrop)
+end
+
+function wMap:GetBorderSize()
+  return self.db.profile.border.size
+end
+
+function wMap:SetBorderColor(info, r, g, b, a)
+  local color = self.db.profile.border.color
+  color[1], color[2], color[3], color[4] = r, g, b, a
+  BorderFrame:SetBackdropBorderColor(self:GetBorderColor())
+end
+
+function wMap:GetBorderColor(info)
+  local color = self.db.profile.border.color
+  return color[1], color[2], color[3], color[4]
+end
+
 function wMap:ChatCommand(input)
     if not input or input:trim() == "" then
         InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
@@ -206,12 +273,7 @@ function wMap:Init_wMap()
   local mediaFolder = "Interface\\AddOns\\wMap\\media\\"   -- don't touch this ...
   local size_x = 180
   local size_y = 180
-  local classcolors = true -- class color text
-  local color = {r=255/255, g=255/255, b=255/255 }
-  local texture = "Interface\\Buttons\\WHITE8x8"
-  local backdrop = {edgeFile = texture, edgeSize = 1}
-  local backdropcolor = {0/255, 0/255, 0/255}     -- backdrop color
-  local brdcolor = {0/255, 0/255, 0/255}          -- backdrop border color
+
   local wMap = CreateFrame("Frame", "wMap", UIParent)
 
   MinimapCluster:EnableMouse(false)
@@ -227,12 +289,16 @@ function wMap:Init_wMap()
   Minimap:SetArchBlobRingScalar(0);
   Minimap:SetQuestBlobRingScalar(0);
 
+  local border = {
+    edgeFile = "Interface\\Buttons\\WHITE8x8",
+    edgeSize = self:GetBorderSize()
+  }
+
   BorderFrame = CreateFrame("Frame", nil, Minimap)
   BorderFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -(22*self:GetScale()))
   BorderFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 1, (22*self:GetScale()))
-  BorderFrame:SetBackdrop(backdrop)
-  BorderFrame:SetBackdropBorderColor(unpack(brdcolor))
-  BorderFrame:SetBackdropColor(unpack(backdropcolor))
+  BorderFrame:SetBackdrop(border)
+  BorderFrame:SetBackdropBorderColor(self:GetBorderColor())
   BorderFrame:SetFrameLevel(6)
 
   self:SetUpClock()
