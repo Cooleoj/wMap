@@ -1,6 +1,19 @@
 local wMap = LibStub("AceAddon-3.0"):NewAddon("wMap", "AceConsole-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
 
+local _G = _G
+local pairs = pairs
+local PlaySound = PlaySound
+local LoadAddOn = LoadAddOn
+local CreateFrame = CreateFrame
+local IsAddOnLoaded = IsAddOnLoaded
+local ToggleCalendar = ToggleCalendar
+local ToggleTimeManager = ToggleTimeManager
+local TimeManager_TurnOffAlarm = TimeManager_TurnOffAlarm
+local InterfaceOptionsFrame_OpenToCategory = InterfaceOptionsFrame_OpenToCategory
+-- GLOBALS: LibStub, Minimap, UIParent, TimeManagerClockButton, TimeManagerFrame
+-- GLOBALS: GameTimeFrame, MinimapCluster, GameTimeCalendarInvitesTexture
+
 local defaults = {
 	profile = {
 		PosX = 0,
