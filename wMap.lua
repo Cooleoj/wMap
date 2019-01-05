@@ -197,7 +197,7 @@ end
 function wMap:SetFontName(info, newValue)
 	self.db.profile.font.name = newValue
 
-	local clockFrame, clockTime = TimeManagerClockButton:GetRegions()
+	local _, clockTime = TimeManagerClockButton:GetRegions()
 	clockTime:SetFont(LSM:Fetch("font", self.db.profile.font.name), self.db.profile.font.size, "OUTLINE")
 
 	TimeManagerClockButton:ClearAllPoints()
@@ -212,7 +212,7 @@ end
 function wMap:SetFontSize(info, newValue)
 	self.db.profile.font.size = newValue
 
-	local clockFrame, clockTime = TimeManagerClockButton:GetRegions()
+	local _, clockTime = TimeManagerClockButton:GetRegions()
 	clockTime:SetFont(LSM:Fetch("font", self.db.profile.font.name), self.db.profile.font.size, "OUTLINE")
 
 	TimeManagerClockButton:ClearAllPoints()
@@ -231,8 +231,8 @@ function wMap:SetScale(info, newValue)
 	Minimap:SetHitRectInsets(0, 0, 24*self:GetScale(), 24*self:GetScale())
 	Minimap:SetPoint(self:GetPosition(), UIParent, self:GetPosition(), self:GetPosX(), self:GetPosY())
 	Minimap:SetScale(self:GetScale())
-	BorderFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -(22*self:GetScale()))
-	BorderFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 1, (22*self:GetScale()))
+	self.BorderFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -(22*self:GetScale()))
+	self.BorderFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 1, (22*self:GetScale()))
 end
 
 function wMap:SetBorderSize(info, newValue)
@@ -244,7 +244,7 @@ function wMap:SetBorderSize(info, newValue)
 		edgeSize = self:GetBorderSize()
 	}
 
-	BorderFrame:SetBackdrop(backdrop)
+	self.BorderFrame:SetBackdrop(backdrop)
 end
 
 function wMap:GetBorderSize()
@@ -254,7 +254,7 @@ end
 function wMap:SetBorderColor(info, r, g, b, a)
 	local color = self.db.profile.border.color
 	color[1], color[2], color[3], color[4] = r, g, b, a
-	BorderFrame:SetBackdropBorderColor(self:GetBorderColor())
+	self.BorderFrame:SetBackdropBorderColor(self:GetBorderColor())
 end
 
 function wMap:GetBorderColor(info)
@@ -295,12 +295,12 @@ function wMap:Init_wMap()
 		edgeSize = self:GetBorderSize()
 	}
 
-	BorderFrame = CreateFrame("Frame", nil, Minimap)
-	BorderFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -(22*self:GetScale()))
-	BorderFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 1, (22*self:GetScale()))
-	BorderFrame:SetBackdrop(border)
-	BorderFrame:SetBackdropBorderColor(self:GetBorderColor())
-	BorderFrame:SetFrameLevel(6)
+	self.BorderFrame = CreateFrame("Frame", nil, Minimap)
+	self.BorderFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -(22*self:GetScale()))
+	self.BorderFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 1, (22*self:GetScale()))
+	self.BorderFrame:SetBackdrop(border)
+	self.BorderFrame:SetBackdropBorderColor(self:GetBorderColor())
+	self.BorderFrame:SetFrameLevel(6)
 
 	self:SetUpClock()
 	self:HideUgly()
