@@ -47,7 +47,7 @@ local options = {
 			type = 'select',
 			order = 0,
 			values = function()
-				positions = {
+				local positions = {
 					["TOP"] = "TOP",
 					["RIGHT"] = "RIGHT",
 					["BOTTOM"] = "BOTTOM",
@@ -138,12 +138,12 @@ function wMap:OnInitialize()
 		LSM.RegisterCallback( wMap, "LibSharedMedia_Registered", "MediaUpdate" )
 		LSM.RegisterCallback( wMap, "LibSharedMedia_SetGlobal", "MediaUpdate" )
 
-		profileOptions = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+		local profileOptions = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 
 		LibStub("AceConfig-3.0"):RegisterOptionsTable("wMap", options)
 		LibStub("AceConfig-3.0"):RegisterOptionsTable("Profiles", profileOptions)
 		self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("wMap", "wMap")
-		submenuOpts = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Profiles", "Profiles", "wMap")
+		LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Profiles", "Profiles", "wMap")
 		self:RegisterChatCommand("wMap", "ChatCommand")
 
 		LibStub("AceConfigRegistry-3.0"):NotifyChange("wMap");
