@@ -372,9 +372,9 @@ function wMap:SetUpClock()
 	TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
 	TimeManagerClockButton:SetScript('OnShow', nil)
 	TimeManagerClockButton:Show()
-	TimeManagerClockButton:SetScript('OnClick', function(_, button)
+	TimeManagerClockButton:SetScript('OnClick', function(clockButton, button)
 		if(button=="RightButton") then
-			if(self.alarmFiring) then
+			if(clockButton.alarmFiring) then
 				PlaySound('igMainMenuQuit')
 				TimeManager_TurnOffAlarm()
 			else
