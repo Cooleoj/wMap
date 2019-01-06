@@ -25,9 +25,13 @@ local defaults = {
 			size = 1,
 			color = { r = 1, g = 1, b = 1, a = 1 }
 		},
-		font = {
-			-- name = nil,
-			size = 18,
+		clock = {
+			font = {
+				-- name = nil,
+				type = "OUTLINE",
+				size = 18,
+				color = { r = 1, g = 1, b = 1, a = 1 },
+			},
 		},
 	},
 }
@@ -42,6 +46,13 @@ local positionOptions = {
 	["BOTTOMLEFT"] = "BOTTOMLEFT",
 	["BOTTOMRIGHT"] = "BOTTOMRIGHT",
 	["CENTER"] = "CENTER",
+}
+
+local fontTypes = {
+	[""] = "None",
+	["OUTLINE"] = "Outline",
+	["THICKOUTLINE"] = "Thick outline",
+	["MONOCHROME"] = "Monochrome",
 }
 
 local options = {
@@ -136,45 +147,82 @@ local options = {
 						local color = wMap.db.profile.border.color
 						return color.r, color.g, color.b, color.a
 					end,
-					set = function(info, newValue)
-						wMap:SetBorderColor(info, newValue)
+					set = function(info, r, g, b, a)
+						wMap:SetBorderColor(info, r, g, b, a)
 					end,
 				},
 			},
 		},
-		font = {
-			order = 5,
+		clock = {
+			order = 4,
 			type = "group",
 			guiInline = true,
-			name = "Fonts",
-			args = {
-				name = {
-					order = 1,
-					type = "select",
-					name ="Font name",
-					dialogControl = "LSM30_Font",
-					values = _G.AceGUIWidgetLSMlists.font,
-					get = function()
-						return wMap:GetFontName()
-					end,
-					set = function(info, newValue)
-						wMap:SetFontName(info, newValue)
-					end,
-				},
-				size = {
-					order = 2,
-					type = "range",
-					name = "Font size",
-					min = 10, max = 20, step = 1,
-					get = function()
-						return wMap:GetFontSize()
-					end,
-					set = function(info, newValue)
-						wMap:SetFontSize(info, newValue)
-					end,
+			name = "Clock",
+			args ={
+				font = {
+					order = 0,
+					type = "group",
+					guiInline = true,
+					name = "Fonts",
+					args = {
+						name = {
+							order = 1,
+							type = "select",
+							name ="Font name",
+							dialogControl = "LSM30_Font",
+							values = _G.AceGUIWidgetLSMlists.font,
+							get = function()
+								return wMap:GetClockFontName()
+							end,
+							set = function(info, newValue)
+								wMap:SetClockFontName(info, newValue)
+							end,
+						},
+						type = {
+							name = "Font type",
+							desc = "The fonts type.",
+							type = 'select',
+							order = 2,
+							values = function()
+								return fontTypes
+							end,
+							get = function()
+								return wMap:GetClockFontType()
+							end,
+							set = function(info, newValue)
+								wMap:SetClockFontType(info, newValue)
+							end,
+						},
+						size = {
+							order = 3,
+							type = "range",
+							name = "Font size",
+							min = 1, max = 100, step = 1,
+							get = function()
+								return wMap:GetClockFontSize()
+							end,
+							set = function(info, newValue)
+								wMap:SetClockFontSize(info, newValue)
+							end,
+						},
+						color = {
+							name = "Text color",
+							desc = "The color of the text.",
+							type = "color",
+							order = 4,
+							hasAlpha = true,
+							get = function()
+								local color = wMap.db.profile.clock.font.color
+								return color.r, color.g, color.b, color.a
+							end,
+							set = function(info, r, g, b, a)
+								wMap:SetClockFontColor(info, r, g, b, a)
+							end,
+						},
+					},
 				},
 			},
-		},
+		}
 	}
 }
 
@@ -243,34 +291,43 @@ function wMap:GetScale()
 	return self.db.profile.Scale
 end
 
-function wMap:SetFontName(_, newValue)
-	self.db.profile.font.name = newValue
+function wMap:SetClockFontName(_, newValue)
+	self.db.profile.clock.font.name = newValue
 
-	local _, clockTime = TimeManagerClockButton:GetRegions()
-	clockTime:SetFont(LSM:Fetch("font", self.db.profile.font.name), self.db.profile.font.size, "OUTLINE")
-
-	TimeManagerClockButton:ClearAllPoints()
-	TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", -1, 14)
-	TimeManagerClockButton:Show()
+	self:UpdateClockFont()
 end
 
-function wMap:GetFontName()
-	return LibStub("LibSharedMedia-3.0"):IsValid("font", self.db.profile.font.name) and self.db.profile.font.name or LibStub("LibSharedMedia-3.0"):GetDefault("font")
+function wMap:GetClockFontName()
+	return LibStub("LibSharedMedia-3.0"):IsValid("font", self.db.profile.clock.font.name) and self.db.profile.clock.font.name or LibStub("LibSharedMedia-3.0"):GetDefault("font")
 end
 
-function wMap:SetFontSize(_, newValue)
-	self.db.profile.font.size = newValue
+function wMap:SetClockFontSize(_, newValue)
+	self.db.profile.clock.font.size = newValue
 
-	local _, clockTime = TimeManagerClockButton:GetRegions()
-	clockTime:SetFont(LSM:Fetch("font", self.db.profile.font.name), self.db.profile.font.size, "OUTLINE")
-
-	TimeManagerClockButton:ClearAllPoints()
-	TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", -1, 14)
-	TimeManagerClockButton:Show()
+	self:UpdateClockFont()
 end
 
-function wMap:GetFontSize()
-	return self.db.profile.font.size
+function wMap:GetClockFontSize()
+	return self.db.profile.clock.font.size
+end
+
+function wMap:SetClockFontType(_, newValue)
+	self.db.profile.clock.font.type = newValue
+
+		self:UpdateClockFont()
+end
+
+function wMap:GetClockFontType()
+	return self.db.profile.clock.font.type
+end
+
+function wMap:SetClockFontColor(_, r, g, b, a)
+	self.db.profile.clock.font.color.r = r
+	self.db.profile.clock.font.color.g = g
+	self.db.profile.clock.font.color.b = b
+	self.db.profile.clock.font.color.a = a
+
+	self.ClockTime:SetTextColor(color.r, color.g, color.b, color.a)
 end
 
 function wMap:SetScale(_, newValue)
@@ -320,6 +377,13 @@ function wMap:ChatCommand(input)
 	end
 end
 
+function wMap:UpdateClockFont()
+	local font = self.db.profile.clock.font
+	self.ClockTime:SetFont(LSM:Fetch("font", font.name), font.size, font.type)
+
+
+end
+
 function wMap:Init_wMap()
 	local mediaFolder = "Interface\\AddOns\\wMap\\media\\"   -- don't touch this ...
 	local size_x = 180
@@ -357,17 +421,16 @@ end
 
 --[[ Clock ]]
 function wMap:SetUpClock()
-	local color = {r=255/255, g=255/255, b=255/255 }
-
 	if not IsAddOnLoaded("Blizzard_TimeManager") then
 		LoadAddOn("Blizzard_TimeManager")
 	end
 
-	local clockFrame, clockTime = TimeManagerClockButton:GetRegions()
-	clockFrame:Hide()
-	clockTime:SetFont(LSM:Fetch("font", self:GetFontName()), self:GetFontSize(), "OUTLINE")
-	clockTime:SetShadowOffset(0,0)
-	clockTime:SetTextColor(color.r, color.g, color.b)
+	self.ClockFrame, self.ClockTime = TimeManagerClockButton:GetRegions()
+	self.ClockFrame:Hide()
+	self.ClockTime:SetFont(LSM:Fetch("font", self:GetClockFontName()), self:GetClockFontSize(), self:GetClockFontType())
+	self.ClockTime:SetShadowOffset(0,0)
+	local color = self.db.profile.clock.font.color
+	self.ClockTime:SetTextColor(color.r, color.g, color.b, color.a)
 	TimeManagerClockButton:ClearAllPoints()
 	TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
 	TimeManagerClockButton:SetScript('OnShow', nil)
