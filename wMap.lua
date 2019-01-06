@@ -3,6 +3,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 
 local _G = _G
 local pairs = pairs
+local tostring = tostring
 local PlaySound = PlaySound
 local LoadAddOn = LoadAddOn
 local CreateFrame = CreateFrame
@@ -22,7 +23,7 @@ local defaults = {
 		Position = "TOPRIGHT",
 		border = {
 			size = 1,
-			color = {r=255/255, g=255/255, b=255/255 }
+			color = { r = 1, g = 1, b = 1, a = 1 }
 		},
 		font = {
 			-- name = nil,
@@ -31,7 +32,7 @@ local defaults = {
 	},
 }
 
-local positions = {
+local positionOptions = {
 	["TOP"] = "TOP",
 	["RIGHT"] = "RIGHT",
 	["BOTTOM"] = "BOTTOM",
@@ -48,14 +49,34 @@ local options = {
 	handler = wMap,
 	type = 'group',
 	args = {
+		Position = {
+			name = "Position",
+			desc = "The position of the minimap.",
+			type = 'select',
+			order = 0,
+			values = function()
+				return positionOptions
+			end,
+			get = function()
+				return wMap:GetPosition()
+			end,
+			set = function(info, newValue)
+				wMap:SetPosition(info, newValue)
+			end,
+		},
 		PosX = {
 			type = "input",
 			name = "XPosition",
 			order = 1,
 			desc = "The X position of minimap relative to Position",
 			usage = "<PosX>",
-			get = "GetPosX",
-			set = "SetPosX",
+			get = function()
+				local posX = wMap:GetPosX()
+				return tostring(posX)
+			end,
+			set = function(info, newValue)
+				wMap:SetPosX(info, newValue)
+			end,
 		},
 		PosY = {
 			type = "input",
@@ -63,19 +84,13 @@ local options = {
 			order = 2,
 			desc = "The Y position of minimap relative to Position",
 			usage = "<PosY>",
-			get = "GetPosY",
-			set = "SetPosY",
-		},
-		Position = {
-			name = "Position",
-			desc = "The position of the minimap.",
-			type = 'select',
-			order = 0,
-			values = function()
-				return positions
+			get = function()
+				local posY = wMap:GetPosY()
+				return tostring(posY)
 			end,
-			get = "GetPosition",
-			set = "SetPosition",
+			set = function(info, newValue)
+				wMap:SetPosY(info, newValue)
+			end,
 		},
 		Scale = {
 			type = "input",
@@ -83,8 +98,13 @@ local options = {
 			order = 3,
 			desc = "The scale of the minimap.",
 			usage = "<Scale>",
-			get = "GetScale",
-			set = "SetScale",
+			get = function()
+				local scale = wMap:GetScale()
+				return tostring(scale)
+			end,
+			set = function(info, newValue)
+				wMap:SetScale(info, newValue)
+			end,
 		},
 		border = {
 			order = 4,
@@ -98,8 +118,13 @@ local options = {
 					order = 0,
 					desc = "The size of the border.",
 					usage = "<Size>",
-					get = "GetBorderSize",
-					set = "SetBorderSize",
+					get = function()
+						local size = wMap:GetBorderSize()
+						return tostring(size)
+					end,
+					set = function(info, newValue)
+						wMap:SetBorderSize(info, newValue)
+					end,
 				},
 				color = {
 					name = "Border color",
@@ -109,14 +134,16 @@ local options = {
 					hasAlpha = true,
 					get = function()
 						local color = wMap.db.profile.border.color
-						return color[1], color[2], color[3], color[4]
+						return color.r, color.g, color.b, color.a
 					end,
-					set = "SetBorderColor",
+					set = function(info, newValue)
+						wMap:SetBorderColor(info, newValue)
+					end,
 				},
 			},
 		},
 		font = {
-			order = 21,
+			order = 5,
 			type = "group",
 			guiInline = true,
 			name = "Fonts",
@@ -126,17 +153,25 @@ local options = {
 					type = "select",
 					name ="Font name",
 					dialogControl = "LSM30_Font",
-					values = AceGUIWidgetLSMlists.font,
-					get = "GetFontName",
-					set = "SetFontName",
+					values = _G.AceGUIWidgetLSMlists.font,
+					get = function()
+						return wMap:GetFontName()
+					end,
+					set = function(info, newValue)
+						wMap:SetFontName(info, newValue)
+					end,
 				},
 				size = {
 					order = 2,
 					type = "range",
 					name = "Font size",
 					min = 10, max = 20, step = 1,
-					get = "GetFontSize",
-					set = "SetFontSize",
+					get = function()
+						return wMap:GetFontSize()
+					end,
+					set = function(info, newValue)
+						wMap:SetFontSize(info, newValue)
+					end,
 				},
 			},
 		},
@@ -268,6 +303,7 @@ end
 function wMap:SetBorderColor(info, r, g, b, a)
 	local color = self.db.profile.border.color
 	color[1], color[2], color[3], color[4] = r, g, b, a
+
 	self.BorderFrame:SetBackdropBorderColor(self:GetBorderColor())
 end
 
@@ -288,8 +324,6 @@ function wMap:Init_wMap()
 	local mediaFolder = "Interface\\AddOns\\wMap\\media\\"   -- don't touch this ...
 	local size_x = 180
 	local size_y = 180
-
-	local wMap = CreateFrame("Frame", "wMap", UIParent)
 
 	MinimapCluster:EnableMouse(false)
 
