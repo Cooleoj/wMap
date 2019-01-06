@@ -211,39 +211,39 @@ function wMap:MediaUpdate()
 	self:SetUpClock()
 end
 
-function wMap:GetPosX(info)
+function wMap:GetPosX()
 	return self.db.profile.PosX
 end
 
-function wMap:SetPosX(info, newValue)
+function wMap:SetPosX(_, newValue)
 	self.db.profile.PosX = newValue
 	Minimap:SetPoint(self.db.profile.Position, UIParent, self.db.profile.Position, self.db.profile.PosX, self.db.profile.PosY)
 end
 
-function wMap:GetPosY(info)
+function wMap:GetPosY()
 	return self.db.profile.PosY
 end
 
-function wMap:SetPosY(info, newValue)
+function wMap:SetPosY(_, newValue)
 	self.db.profile.PosY = newValue
 	Minimap:SetPoint(self.db.profile.Position, UIParent, self.db.profile.Position, self.db.profile.PosX, self.db.profile.PosY)
 end
 
-function wMap:GetPosition(info)
+function wMap:GetPosition()
 	return self.db.profile.Position
 end
 
-function wMap:SetPosition(info, newValue)
+function wMap:SetPosition(_, newValue)
 	self.db.profile.Position = newValue
 	Minimap:ClearAllPoints()
 	Minimap:SetPoint(self.db.profile.Position, UIParent, self.db.profile.Position, self.db.profile.PosX, self.db.profile.PosY)
 end
 
-function wMap:GetScale(info)
+function wMap:GetScale()
 	return self.db.profile.Scale
 end
 
-function wMap:SetFontName(info, newValue)
+function wMap:SetFontName(_, newValue)
 	self.db.profile.font.name = newValue
 
 	local _, clockTime = TimeManagerClockButton:GetRegions()
@@ -254,11 +254,11 @@ function wMap:SetFontName(info, newValue)
 	TimeManagerClockButton:Show()
 end
 
-function wMap:GetFontName(info)
+function wMap:GetFontName()
 	return LibStub("LibSharedMedia-3.0"):IsValid("font", self.db.profile.font.name) and self.db.profile.font.name or LibStub("LibSharedMedia-3.0"):GetDefault("font")
 end
 
-function wMap:SetFontSize(info, newValue)
+function wMap:SetFontSize(_, newValue)
 	self.db.profile.font.size = newValue
 
 	local _, clockTime = TimeManagerClockButton:GetRegions()
@@ -273,7 +273,7 @@ function wMap:GetFontSize()
 	return self.db.profile.font.size
 end
 
-function wMap:SetScale(info, newValue)
+function wMap:SetScale(_, newValue)
 	self.db.profile.Scale = newValue
 
 	Minimap:SetSize(180*self:GetScale(), 180*self:GetScale())
@@ -284,7 +284,7 @@ function wMap:SetScale(info, newValue)
 	self.BorderFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 1, (22*self:GetScale()))
 end
 
-function wMap:SetBorderSize(info, newValue)
+function wMap:SetBorderSize(_, newValue)
 	self.db.profile.border.size = newValue
 
 	local texture = "Interface\\Buttons\\WHITE8x8"
@@ -300,14 +300,14 @@ function wMap:GetBorderSize()
 	return self.db.profile.border.size
 end
 
-function wMap:SetBorderColor(info, r, g, b, a)
+function wMap:SetBorderColor(_, r, g, b, a)
 	local color = self.db.profile.border.color
 	color[1], color[2], color[3], color[4] = r, g, b, a
 
 	self.BorderFrame:SetBackdropBorderColor(self:GetBorderColor())
 end
 
-function wMap:GetBorderColor(info)
+function wMap:GetBorderColor()
 	local color = self.db.profile.border.color
 	return color[1], color[2], color[3], color[4]
 end
@@ -372,7 +372,7 @@ function wMap:SetUpClock()
 	TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
 	TimeManagerClockButton:SetScript('OnShow', nil)
 	TimeManagerClockButton:Show()
-	TimeManagerClockButton:SetScript('OnClick', function(self, button)
+	TimeManagerClockButton:SetScript('OnClick', function(_, button)
 		if(button=="RightButton") then
 			if(self.alarmFiring) then
 				PlaySound('igMainMenuQuit')
